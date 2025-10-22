@@ -1,0 +1,30 @@
+[
+  {
+    "timestamp": "2025-10-21T15:18:29.481Z",
+    "level": "info",
+    "source": "unknown",
+    "message": "Test dengan path fix",
+    "ip": "localhost"
+  },
+  {
+    "timestamp": "2025-10-21T15:26:39.208Z",
+    "level": "info",
+    "source": "unknown",
+    "message": "Test dengan Azure Blob Storage",
+    "ip": "localhost"
+  },
+  {
+    "timestamp": "2025-10-21T15:27:05.069Z",
+    "level": "info",
+    "source": "auth",
+    "message": "User login successful",
+    "ip": "localhost"
+  },
+  {
+    "timestamp": "2025-10-21T15:27:12.004Z",
+    "level": "error",
+    "source": "database",
+    "message": "Database timeout",
+    "ip": "localhost"
+  }
+]

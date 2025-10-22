@@ -1,0 +1,9 @@
+[
+  {
+    "timestamp": "2025-10-21T15:13:08.641Z",
+    "level": "info",
+    "source": "auth",
+    "message": "User logged in",
+    "ip": "localhost"
+  }
+]
