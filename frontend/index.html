@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☁️ Azure Cloud Logger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn.info { background: #007bff; color: white; }
+        .btn.warning { background: #ffc107; color: black; }
+        .btn.error { background: #dc3545; color: white; }
+        
+        .result {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+            text-align: left;
+            min-height: 100px;
+        }
+        
+        .success { border-left-color: #28a745 !important; }
+        .error-result { border-left-color: #dc3545 !important; }
+        
+        .tech-stack {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>☁️ Azure Cloud Logger</h1>
+        <p class="subtitle">Serverless Logging System with Azure Functions & Blob Storage</p>
+        
+        <div class="btn-group">
+            <button class="btn info" onclick="sendLog('info')">📝 Info Log</button>
+            <button class="btn warning" onclick="sendLog('warning')">⚠️ Warning Log</button>
+            <button class="btn error" onclick="sendLog('error')">❌ Error Log</button>
+        </div>
+        
+        <div id="result" class="result">
+            <em>Click a button above to test the cloud logger...</em>
+        </div>
+        
+        <div class="tech-stack">
+            <strong>Tech Stack:</strong> Azure Functions • Blob Storage • Node.js • REST API
+        </div>
+    </div>
+
+    <script>
+        async function sendLog(level) {
+            const resultDiv = document.getElementById('result');
+            const originalContent = resultDiv.innerHTML;
+            
+            resultDiv.innerHTML = '<div style="text-align: center;">🔄 Sending log to Azure Cloud...</div>';
+            resultDiv.className = 'result';
+            
+            try {
+                const startTime = Date.now();
+                const response = await fetch('https://ikbar-logger-001.azurewebsites.net/api/logreceiver', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: `${level.toUpperCase()}: Log generated from web interface`,
+                        level: level,
+                        source: 'web-dashboard',
+                        userAgent: navigator.userAgent
+                    })
+                });
+                
+                const result = await response.json();
+                const endTime = Date.now();
+                
+                resultDiv.className = result.success ? 'result success' : 'result error-result';
+                resultDiv.innerHTML = `
+                    <div style="margin-bottom: 10px;">
+                        <strong>${result.success ? '✅ SUCCESS' : '❌ ERROR'}</strong>
+                        <span style="float: right; color: #666; font-size: 0.9em;">${endTime - startTime}ms</span>
+                    </div>
+                    <div style="margin-bottom: 10px;"><strong>Message:</strong> ${result.message}</div>
+                    <div style="margin-bottom: 10px;"><strong>Storage:</strong> ${result.storage || 'none'}</div>
+                    <div style="margin-bottom: 10px;"><strong>Log ID:</strong> ${result.logId}</div>
+                    ${result.warning ? `<div style="color: orange;"><strong>Warning:</strong> ${result.warning}</div>` : ''}
+                    ${!result.success ? `<div style="color: red;"><strong>Error:</strong> ${result.error}</div>` : ''}
+                `;
+                
+            } catch (error) {
+                resultDiv.className = 'result error-result';
+                resultDiv.innerHTML = `
+                    <strong>❌ NETWORK ERROR</strong><br>
+                    <em>${error.message}</em><br><br>
+                    <button onclick="document.getElementById('result').innerHTML = '${originalContent}'">← Back</button>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
